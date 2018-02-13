@@ -1,16 +1,34 @@
-require 'rake/testtask'
-require 'fileutils'
+require 'sequel'
+require 'rubocop'
+require 'rubocop/rake_task'
+require 'rspec/core/rake_task'
+$: << File.expand_path(File.join(__dir__, "config"))
 
-Rake::TestTask.new do |t|
-  t.libs << '.'
-  t.test_files = FileList['*_test.rb']
-  t.verbose = true
-  t.warning = false
+RuboCop::RakeTask.new(:rubocop) do |task|
+  task.patterns = ['*.rb']
+  task.fail_on_error = false
 end
 
-desc Rake::Task['test'].comment
+require 'rspec/core/rake_task'
+RSpec::Core::RakeTask.new(:spec)
+task :test => :spec
 
-require 'rubocop/rake_task'
-RuboCop::RakeTask.new
+task default: [:rubocop, :test]
 
-task default: %i[rubocop test]
+task :database do
+  require "database"
+end
+
+desc 'Manages database'
+namespace :db do
+  desc 'Migrate database'
+  task :migrate => :database do
+    require "sequel/extensions/migration"
+    Sequel::IntegerMigrator.new(DB, File.expand_path("../config/migrations", __FILE__)).run
+  end
+
+  task :migrate_down => :database do
+    require "sequel/extensions/migration"
+    Sequel::IntegerMigrator.new(DB, File.expand_path("../config/migrations", __FILE__), :target => 0).run
+  end
+end

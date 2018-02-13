@@ -1,0 +1,11 @@
+<form action="/vozidlo" method="post">
+  <p>Výběr auta: <select id="vozidlo" name="vozidlo_spz">        
+          <% DB[:jizdy].where(:uzivatel => @uzivatel).select(:vozidlo_spz).distinct.each do |vozidlo|%>
+             <option value="<%= vozidlo[:vozidlo_spz] %>"><%= vozidlo[:vozidlo_spz] %></option>       
+          <% end %>
+          </select></p>
+  <input type="submit" value="Zvolit" />
+
+</form>
+
+

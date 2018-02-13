@@ -1,0 +1,9 @@
+<form action="/login" method="post">
+  <p>Jméno: <input value="TestStandard" type="text" name="username" /></p>
+  <p>Heslo: <input value="Test.123" type="password" name="password" /></p>
+  <input type="submit" value="Log In" />
+</form>
+
+<hr />
+Celkem: <%= DatabaseHelper.all_jizdy.count %> jízd
+
